@@ -10,6 +10,7 @@ import os
 import subprocess
 import gzip
 import threading
+import re
 if sys.version_info[1] >= 6:  import json
 else: import simplejson as json
 
@@ -206,12 +207,19 @@ if __name__ == "__main__":
         print '\n'.join(l) #Print the results
     songid = raw_input("Enter the Song IDs you wish to download (separated with commas) or (q) to exit: ")
     if songid == "" or songid == "q": exit() #Exit if choice is empty or q
+    
     inputtedIDs=songid.split(',')
 
     #songid = eval(songid)-1 #Turn it into an int and subtract one to fit it into the list index
     queueID = getQueueID()
     for curID in inputtedIDs:
-        songid=eval(curID)-1
+        print inputtedIDs
+        if re.search('[1-9]-([1-9]|[10])',str(curID)) != None:      # regex expression matches -- e.g, 4-7
+            selectedBounds = map(int,str(curID).split('-'))
+
+            inputtedIDs.extend(range(selectedBounds[0],selectedBounds[1]+1))        # add the 
+            continue
+        songid=int(curID)-1
         addSongsToQueue(s[songid], queueID) #Add the song to the queue
         print "Retrieving stream key.."
         stream = getStreamKeyFromSongIDs(s[songid]["SongID"]) #Get the StreamKey for the selected song
